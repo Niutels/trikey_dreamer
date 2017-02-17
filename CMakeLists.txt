@@ -19,3 +19,6 @@ catkin_package(
 add_library(Trikey_Plugin_Test src/trikey_plugin.cpp)
 target_link_libraries(Trikey_Plugin_Test ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_library(TrikeyDreamer_Plugin_Test src/trikey_dreamer_plugin.cpp)
+target_link_libraries(TrikeyDreamer_Plugin_Test ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
