@@ -1,0 +1,12 @@
+<launch>
+<!-- Load  Dreamer URDF -->
+	<param name="robot_description"	textfile="$(find trikey_dreamer)/robots/dreamer_ltw.urdf" /> 
+<!--    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />  -->
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+    <param name="use_gui" value="True"/>
+<!-- Load RVIZ -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find trikey_dreamer)/launch/dreamer.rviz" />
+ 
+
+</launch>

@@ -1,5 +1,7 @@
 #include <ros/ros.h>
 
+// #include "std_msgs/Float32.h"
+// #include <sstream>
 #include <boost/bind.hpp>
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
@@ -7,12 +9,19 @@
 #include <sdf/parser.hh>
 #include <stdio.h>
 #include <unistd.h>
+#include <std_msgs/Float64MultiArray.h>
+#include <vector> 
 
 namespace gazebo
 {
   class TrikeyDreamerPlugin: public ModelPlugin
   {
   public:
+
+    // ros::NodeHandle nh;
+    
+    // ros::Publisher Error_pub = nh.advertise<std_msgs::Float32>("/err", 1000);
+
     TrikeyDreamerPlugin()
     {
       printf("Hello World!\n");
@@ -21,6 +30,7 @@ namespace gazebo
       q0 = std::vector<double>();
       prior_q = std::vector<double>();
       q_dot = std::vector<double>();
+
     }
 
     ~TrikeyDreamerPlugin()
@@ -69,12 +79,24 @@ namespace gazebo
     std::vector<double> q0;
     std::vector<double> q_dot; // dq/dt
     std::vector<double> prior_q; // prior value of q
+    double Theta = 0;
+    int ind_Pitch;
+    int ind_RYaw;
+    int ind_LYaw;
+    std::vector<double> Rr;
+    std::vector<double> Rl;
+    double TP;
+    double TRY;
+    double TLY;
+    std_msgs::Float64MultiArray R;  
 
     // Called by the world update start event
     void OnUpdate(const common::UpdateInfo & /*_info*/)
     {
       double seconds_per_step = this->model->GetWorld()->GetPhysicsEngine()->GetUpdatePeriod();
       double alternate_time = this->model->GetWorld()->GetSimTime().Double();
+
+
       // std::cerr << "Update spam! from ValkyireAnklePlugin" << std::endl;
       last_iters = iters;
       iters = this->model->GetWorld()->GetIterations();
@@ -88,6 +110,15 @@ namespace gazebo
           prior_q.push_back(q0[i]);
           q_dot.push_back(0.0);
           std::cout<<joints[i]->GetName()<<std::endl;
+          if (joints[i]->GetName() == "eye_pitch"){
+          ind_Pitch = i ;
+          }          
+          else if (joints[i]->GetName() == "right_eye_yaw"){
+          ind_RYaw = i ;
+          }
+          else if (joints[i]->GetName() == "left_eye_yaw"){
+          ind_LYaw = i ;
+          }
         }
         first_iter=false;
       }
@@ -119,8 +150,41 @@ namespace gazebo
       gazebo::math::Vector3 root_link_angular_vel = links.at(0)->GetWorldAngularVel();
       gazebo::math::Vector3 root_link_linear_accel = links.at(0)->GetWorldLinearAccel();
       gazebo::math::Vector3 root_link_angular_accel = links.at(0)->GetWorldAngularAccel();
+      Theta=Theta+0.01;
 
-      //apply command
+double dist = 2.4+ 2 * cos(Theta/16);
+      math::Pose PointCR { 0 , 0 , 0 , 0 , 0 , 0 };
+      math::Pose PointCL { 0 , 0 , 0 , 0 , 0 , 0 };
+      //math::Pose PointW = { ( 4.2 + 2 * cos(Theta/4)), 0.5*cos(Theta), 1.55, 0, 0, 0}; 
+      math::Pose PointW = { dist, 0, 1.55, 0, 0, 0}; //+ 2 * cos(Theta/4)) ( 2.40 + 2 * cos(Theta/4))
+      if (dist<1)
+        {std::cout<<"A meter away from the robot "<<std::endl;}
+      else if (dist<2 && dist>1)
+                {std::cout<<"2 meters away from the robot "<<std::endl;}        
+      else if (dist<3 && dist>2)
+                {std::cout<<"3 meters away from the robot "<<std::endl;}
+      else if (dist<4 && dist>3)
+                {std::cout<<"4 meters away from the robot "<<std::endl;}        
+      else if (dist<5 && dist>4)
+                {std::cout<<"more than 4 meters away from the robot "<<std::endl;}
+
+      math::Pose VectTR = { 0, 0, 0, 0, 0, 0};
+      math::Pose VectTL = { 0, 0, 0, 0, 0, 0};
+
+      PointCR = joints[ind_RYaw]->GetWorldPose();
+      PointCL = joints[ind_LYaw]->GetWorldPose();
+
+      VectTR.pos = PointW.pos - PointCR.pos ;
+      VectTL.pos = PointW.pos - PointCL.pos ;
+     
+      double NormXYR = sqrt( pow(VectTR.pos[0],2) + pow(VectTR.pos[1],2) );
+      double NormXYL = sqrt( pow (VectTL.pos[0],2) + pow(VectTL.pos[1],2) );
+      double NormYZ = sqrt( pow (VectTR.pos[0],2) + pow(VectTL.pos[2],2) );
+  
+      q0[ind_RYaw] = asin( VectTR.pos[1] / NormXYR );
+      q0[ind_LYaw] = asin( VectTL.pos[1] / NormXYL );
+      q0[ind_Pitch] = asin( VectTR.pos[2] / NormYZ );  
+
       for(unsigned int i = 0; i < joints.size(); i++)
       {
           double error = joints[i]->GetAngle(0).Radian()-q0[i];
@@ -133,7 +197,22 @@ namespace gazebo
           }
           else if (joints[i]->GetName() == "base_to_wheel_j2"){
             joints[i]->SetForce(0, 1.0);
-          } 
+          }
+          else if (joints[i]->GetName() == "right_eye_yaw"){
+            // joints[i]->SetForce(0, -1*error);   
+
+          joints[i]->SetPosition(0,q0[ind_RYaw]);
+          }
+          else if (joints[i]->GetName() == "left_eye_yaw"){
+          //   joints[i]->SetForce(0, -1*error);
+
+          joints[i]->SetPosition(0,q0[ind_LYaw]);
+
+          }
+          else if (joints[i]->GetName() == "eye_pitch"){
+          joints[i]->SetPosition(0,q0[ind_Pitch]);
+          }  
+
           else if ((joints[i]->GetName() == "torso_lower_pitch") ||
                   (joints[i]->GetName() == "torso_yaw") ||
                   (joints[i]->GetName() == "right_shoulder_extensor") ||
@@ -143,9 +222,8 @@ namespace gazebo
           }
 
           else{
-            //joints[i]->SetForce(0, -50.0*error);
+            joints[i]->SetForce(0, -500.0*error);
           }
-
       }
     }
 
@@ -157,4 +235,6 @@ namespace gazebo
 // Register this plugin with the simulator
   GZ_REGISTER_MODEL_PLUGIN (TrikeyDreamerPlugin)
 
-} // namespace gazebo
+} 
+
+

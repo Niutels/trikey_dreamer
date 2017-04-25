@@ -9,6 +9,11 @@
     <include>
       <uri>model://controlit_ground_model</uri>
     </include>
+    <include>
+      <uri>model://Arm</uri>
+      <name>model</name>
+      <pose>3 0 0 0 0 0</pose>
+    </include>
 
 
     <!-- define light manually so we can control its direction -->

@@ -134,7 +134,7 @@ namespace gazebo
           else if (joints[i]->GetName() == "base_to_wheel_j2"){
             joints[i]->SetForce(0, 1.0);
           } else{
-            //joints[i]->SetForce(0, -50.0*error);
+            joints[i]->SetForce(0, -50.0*error);
           }
 
       }

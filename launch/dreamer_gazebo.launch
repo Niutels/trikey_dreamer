@@ -1,0 +1,26 @@
+<launch>
+<!-- Robot pose -->
+<arg name="x" default="0"/>
+<arg name="y" default="0"/>
+<arg name="z" default="0"/>
+<arg name="roll" default="0"/>
+<arg name="pitch" default="0"/>
+<arg name="yaw" default="0"/>
+
+<arg name="robot" default="dreamer" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find trikey_dreamer)/gazebo_world/empty_world.world"/>
+    <arg name="paused" value="True" />
+  </include>
+
+  <!-- load robot -->
+  <param name="robot_description"
+  textfile="$(find trikey_dreamer)/robots/dreamer_ltw.urdf" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />  
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+   args="-urdf -model dreamer -param robot_description"/>
+  
+ 
+</launch>
+

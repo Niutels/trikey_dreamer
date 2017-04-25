@@ -58,7 +58,34 @@
     </plugin>
   </gazebo>
 
-<gazebo reference="right_eye_yaw_link">
+  <!-- Camera R -->
+
+    <joint name="camera_jointR" type="fixed">
+      <axis xyz="1 0 0" />
+      <origin xyz="0.02 0 0" rpy="0 0 0"/>
+      <parent link="right_eye_yaw_link"/>
+      <child link="camera_linkR"/>
+    </joint>
+
+  <link name="camera_linkR">
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+
+<gazebo reference="camera_linkR">
 
     <sensor type="camera" name="cameraR">
       <update_rate>30.0</update_rate>
@@ -84,9 +111,9 @@
         <updateRate>0.0</updateRate>
         <cameraName>stereo/right</cameraName>
         <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>camera_inf</cameraInfoTopicName>
-        <frameName>right_eye_yaw_link</frameName>
-        <hackBaseline>0.106</hackBaseline>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_linkR</frameName>
+        <hackBaseline>0.07</hackBaseline>
         <distortionK1>0</distortionK1>
         <distortionK2>0</distortionK2>
         <distortionK3>0</distortionK3>
@@ -96,7 +123,33 @@
     </sensor>
   </gazebo>  
 
-   <gazebo reference="left_eye_yaw_link">
+  <!-- Camera L -->
+
+    <joint name="camera_jointL" type="fixed">
+      <axis xyz="1 0 0" />
+      <origin xyz="0.02 0 0" rpy="0 0 0"/>
+      <parent link="left_eye_yaw_link"/>
+      <child link="camera_linkL"/>
+    </joint>
+
+  <link name="camera_linkL">
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+   <gazebo reference="camera_linkL">
 
     <sensor type="camera" name="cameraL">
       <update_rate>30.0</update_rate>
@@ -123,9 +176,9 @@
         <updateRate>0.0</updateRate>
         <cameraName>stereo/left</cameraName>
         <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>camera_inf</cameraInfoTopicName>
-        <frameName>left_eye_yaw_link</frameName>
-        <hackBaseline>0.0</hackBaseline>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_linkL</frameName>
+        <hackBaseline>0.07</hackBaseline>
         <distortionK1>0.0</distortionK1>
         <distortionK2>0.0</distortionK2>
         <distortionK3>0.0</distortionK3>
@@ -134,6 +187,118 @@
       </plugin>
     </sensor>
   </gazebo> 
+ 
+<!--    <gazebo reference="camera_linkL">
+
+    <sensor type="multicamera" name="stereo_camera">
+      <update_rate>30.0</update_rate>
+      <camera name="left">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>1032</width>
+          <height>776</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type> 
+        <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <camera name="right">
+        <pose>0 -0.07 0 0 0 0</pose>
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>1032</width>
+          <height>776</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="stereo_camera_controller" filename="libgazebo_ros_multicamera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>dreamer</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_linkL</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>  -->
+
+<!-- <gazebo reference="camera_link">
+    <sensor type="multicamera" name="stereo_camera">
+      <update_rate>30.0</update_rate>
+      <camera name="right">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <camera name="left">
+        <pose>0 -0.07 0 0 0 0</pose>
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="stereo_camera_controller" filename="libgazebo_ros_multicamera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>multisense_sl/camera</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>left_camera_optical_frame</frameName>
+        <rightFrameName>right_camera_optical_frame</rightFrameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo> -->
 
   <material name="red">
     <color rgba="1.0 0.0 0.0 1.0"/>
@@ -804,10 +969,8 @@
   <joint name="right_eye_yaw" type="revolute">
     <axis xyz="0 0 1"/>
     <limit effort="100" lower="-0.597077137107" upper="0.597129496985" velocity="27.9252680319"/>
-
-    <origin rpy="0 0 0" xyz="0 -0.053 0"/>
-<!--     <origin rpy="0 0 0.152836" xyz="0 -0.053 0"/>
- -->    <parent link="eye_pitch_link"/>
+    <origin rpy="0 0 0.152836" xyz="0 -0.053 0"/>
+    <parent link="eye_pitch_link"/>
     <child link="right_eye_yaw_link"/>
   </joint>
   <link name="right_eye_yaw_link">
@@ -834,9 +997,8 @@
   <joint name="left_eye_yaw" type="revolute">
     <axis xyz="0 0 1"/>
     <limit effort="100" lower="-0.6129596333" upper="0.613046899763" velocity="27.9252680319"/>
-    <origin rpy="0 0 0" xyz="0 0.053 0"/>
-<!--     <origin rpy="0 0 -0.152836" xyz="0 0.053 0"/>
- -->    <parent link="eye_pitch_link"/>
+    <origin rpy="0 0 -0.152836" xyz="0 0.053 0"/>
+    <parent link="eye_pitch_link"/>
     <child link="left_eye_yaw_link"/>
   </joint>
   <link name="left_eye_yaw_link">
