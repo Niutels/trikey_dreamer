@@ -1,4 +1,4 @@
-### This package was tested on ROS Indigo Ubuntu 14.04 LTS. Gazebo 7. 
+###  This package was tested on ROS Indigo Ubuntu 14.04 LTS. Gazebo 7. 
 
 ### Example method to launch the controller for Trikey is via:
 $roslaunch trikey_dreamer trikey_gazebo.launch 
