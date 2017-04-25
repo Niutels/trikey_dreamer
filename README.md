@@ -8,3 +8,5 @@ $roslaunch trikey_dreamer trikey_gazebo.launch
 #### Add this to your ~/.bashrc file:
 export GAZEBO_MODEL_PATH=~/catkin_ws/src/trikey_dreamer/gazebo_world/models:$GAZEBO_MODEL_PATH
 
+
+testing
